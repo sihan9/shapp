@@ -93,7 +93,7 @@ const options = {
     chooseFromLibraryButtonTitle:'从相册选取',
     cancelButtonTitle:'退出',
     rotation:0,
-    PermissionDenied:{
+    permissionDenied:{
         title:'授权允许',
         text:'是否允许调用摄像机或从相册中读取照片',
         reTryTitle:'去授权',
