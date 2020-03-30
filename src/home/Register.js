@@ -60,7 +60,8 @@ export default class Register extends Component {
             pwd:'',
             samepwd:'',
             tips:'',
-            isregister:false
+            isregister:false,
+            pwdissame:false
         }
     }
     userhandle = (text)=>{
@@ -73,21 +74,43 @@ export default class Register extends Component {
         this.setState({samepwd:text},()=>{
           if(this.state.samepwd === this.state.pwd){
             this.setState({tips:''});
-            this.setState({isregister:true});
+            this.setState({pwdissame:true});
           }else{
             this.setState({tips:'密码不一致'});
-            this.setState({isregister:false});
           }
         });
     }
-    register = (isregister)=>{
-      myFetch.post('/register',{
+    register = ()=>{
+      if(
+        this.state.username != '' &&
+        this.state.pwd != '' &&
+        this.state.samepwd != '' &&
+        this.state.pwdissame
+      ){
+        myFetch.post('/register',{
           username:this.state.username,
           pwd:this.state.pwd
-      }).then(res=>{
-        Actions.login();
-      })
-    } 
+        }).then(res=>{
+          if(res.data.isregister )
+            Actions.login();
+          else
+            this.setState({tips:'该用户名已注册，注册失败'})
+        })
+      }else{
+        this.setState({tips:'确认密码不正确 或 注册信息未填写！'})
+      }
+    }
+    onblur = ()=>{
+      if(this.state.username === '')
+        this.setState({tips:"用户名不能为空"});
+      else if(this.state.pwd === '')
+        this.setState({tips:"密码不能为空"});
+      else if(this.state.samepwd === '')
+        this.setState({tips:"确认密码不能为空"});
+      else
+        this.setState({tips:""});
+    }
+
   render() {
     return (
       <ImageBackground style={styles.main}
@@ -100,16 +123,18 @@ export default class Register extends Component {
               placeholderTextColor="#ccc"
               style={styles.inputText}
               onChangeText={this.userhandle}
+              onBlur = {this.onblur}
             />
           </View>
           <View style={styles.input}>
             <Icon name="lock1" color="#ccc" size={30}/>
             <TextInput 
-              onChangeText={this.pwdhandle}
               placeholder="密码"  
               placeholderTextColor="#ccc"
               style={styles.inputText}
               secureTextEntry={true} 
+              onChangeText={this.pwdhandle}
+              onBlur = {this.onblur}
             />
           </View>
           <View style={styles.input}>
@@ -117,9 +142,10 @@ export default class Register extends Component {
             <TextInput  
               placeholderTextColor="#ccc"
               style={styles.inputText}
-              onChangeText={this.samepwdhandle}
               placeholder="确认密码" 
               secureTextEntry={true} 
+              onChangeText={this.samepwdhandle}
+              onBlur = {this.onblur}
             />
           </View>
           <View style={styles.tip}>
@@ -129,7 +155,7 @@ export default class Register extends Component {
           </View>
           <TouchableOpacity 
               style={styles.btn}
-              onPress={()=>this.register(this.state.isregister)}>
+              onPress={()=>this.register()}>
               <Text style={styles.btnText}>注册账号</Text>
           </TouchableOpacity>
           <TouchableOpacity  

@@ -87,8 +87,12 @@ const flatlist2 = [
     },
 ]
 const options = {
-    title: 'Select Avatar',
-    customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
+    title: '请选择上传头像的方式',
+    // customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
+    takePhotoButtonTitle:'相机拍照',
+    chooseFromLibraryButtonTitle:'从相册选取',
+    cancelButtonTitle:'退出',
+    rotation:0,
     storageOptions: {
       skipBackup: true,
       path: 'images',
@@ -243,7 +247,7 @@ const Personal = () =>  {
                 />
             </View>
             <View style ={styles.bottom}>
-                <Text onPress={()=>unload()} style ={styles.bottomText}>BINNU DHILLON | 退出</Text>
+                <Text onPress={()=>unload()} style ={styles.bottomText}>BINNU DHILLON | 退出登陆</Text>
             </View>         
         </ScrollView>
     )

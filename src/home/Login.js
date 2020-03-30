@@ -26,11 +26,21 @@ const styles = StyleSheet.create({
     fontSize:20,
     fontWeight:"bold"
   },
+  tip:{
+    width: '80%',
+    height: 40,
+    justifyContent: 'center',
+    marginLeft:'20%'
+  },
+  tipText:{
+    color:'red',
+    fontSize:20
+  },
   btn:{
     width: '80%',
     height: 40,
     backgroundColor: '#f23030',
-    marginTop: 30,
+    marginBottom: 30,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius:10
@@ -56,7 +66,7 @@ const styles = StyleSheet.create({
     opacity:0.8,
   },
   isloadText:{
-    fontSize:30,
+    fontSize:18,
     color:'#000'
   },
   isloadImage:{
@@ -71,30 +81,52 @@ export default class Login extends Component {
         this.state = {
             username:'',
             pwd:'',
+            tips:'',
             isloading:false
         }
     }
     userhandle = (text)=>{
-        this.setState({username:text})
+      this.setState({username:text})
+      if(this.state.username != '')
+        this.setState({tips:""});
     }
     pwdhandle = (text)=>{
-        this.setState({pwd:text})
+      this.setState({pwd:text})
+      if(this.state.pwd != '')
+        this.setState({tips:""});
     }
     login = ()=>{
-      // myFetch.get('/home',{limit:4})
-      myFetch.post('/login',{
-        username:this.state.username,
-        pwd:this.state.pwd}
-      ).then(res=>{
-        //根据返回状态进行判断，正确的时跳转首页
-        AsyncStorage.setItem('user',JSON.stringify(res.data))
-        .then(()=>{
-            this.setState({isloading:true},()=>{
-              setTimeout(()=>Actions.service(),1000);
-            });
+      if(
+        this.state.username != '' &&
+        this.state.pwd != ''
+      ){
+        myFetch.post('/login',{
+          username:this.state.username,
+          pwd:this.state.pwd}
+        ).then(res=>{
+          if(res.data.islogin == "1"){
+            AsyncStorage.setItem('user',JSON.stringify(res.data))
+            .then(()=>{
+              this.setState({isloading:true},()=>{
+                setTimeout(()=>Actions.service(),1000);
+              });
+            })
+          }else{
+            this.setState({tips:"用户名/密码不正确 或 未注册"});
+          }
         })
-      })
-    } 
+      }else{
+        this.setState({tips:"请填写登陆信息！"});
+      }
+    }
+    onblur = ()=>{
+      if(this.state.username === '')
+        this.setState({tips:"用户名不能为空"});
+      else if(this.state.pwd === '')
+        this.setState({tips:"密码不能为空"});
+      else
+        this.setState({tips:""});
+    }
   render() {
     return (
       <View style={styles.main}>
@@ -105,21 +137,28 @@ export default class Login extends Component {
             style={styles.mainView}>
             <View style={styles.input}>
               <Icon name="user" color="#fff" size={30}/>
-              <TextInput placeholder="用户名" 
+              <TextInput placeholder="用户名:sh or hh" 
                 placeholderTextColor="#fff"
                 style={styles.inputText}
                 onChangeText={this.userhandle}
+                onBlur = {this.onblur}
               />
             </View>
             <View style={styles.input}>
               <Icon name="lock1" color="#fff" size={30}/>
               <TextInput 
-                  onChangeText={this.pwdhandle}
                   style={styles.inputText}
                   placeholderTextColor="#fff"
-                  placeholder="密码" 
+                  placeholder="密码:111 or 222" 
                   secureTextEntry={true} 
+                  onChangeText={this.pwdhandle}
+                  onBlur = {this.onblur}
               />
+            </View>
+            <View style={styles.tip}>
+              <Text style={styles.tipText}>
+                {this.state.tips}
+              </Text>
             </View>
             <TouchableOpacity 
                 style={styles.btn}
