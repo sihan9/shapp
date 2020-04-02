@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity,
-AsyncStorage,ImageBackground, Image} from 'react-native';
+AsyncStorage,ImageBackground, Image, Platform, BackHandler, ToastAndroid} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { Actions } from 'react-native-router-flux';
 import {myFetch} from '../utils';
@@ -84,6 +84,26 @@ export default class Login extends Component {
             tips:'',
             isloading:false
         }
+    }
+    componentDidMount(){
+      if(Platform.OS === 'android'){
+        BackHandler.addEventListener('hardwareBackPress',this.onBack);
+      }
+    }
+    componentWillUnmount(){
+      if(Platform.OS === 'android'){
+        BackHandler.removeEventListener('hardwareBackPress',this.onBack);
+      }
+    }
+    onBack = () =>{
+      if(this.lastBackPressed && this.lastBackPressed +2000 >Date.now()){
+        BackHandler.exitApp();
+        return false;
+      }else{
+        this.lastBackPressed = Date.now();
+        ToastAndroid.show('确定退出吗？',1000);
+        return true;
+      }
     }
     userhandle = (text)=>{
       this.setState({username:text})

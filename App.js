@@ -40,16 +40,16 @@ const App = () => {
       AsyncStorage.getItem('user')
       .then(res=>{
         let user = JSON.parse(res);
+        console.log(user);
         if(!user){
           SplashScreen.hide();
         }
-        if(user && user.token){
+        if(user){
           setLogin(true);
           SplashScreen.hide();
         }
       })
     })
-    
   }
   useEffect(() => {
     init();
@@ -66,7 +66,7 @@ const App = () => {
     <Router
       backAndroidHandler={()=>{
         // console.log(Actions.currentScene);
-        if(Actions.currentScene == 'login'){
+        if(Actions.currentScene == '_service'){
           if(new Date().getTime()-now < 2000){
             BackHandler.exitApp();
             return false;
@@ -75,19 +75,9 @@ const App = () => {
             now = new Date().getTime();
             return true;
           }
-        }
-        if(Actions.currentScene != '_service'){
+        }else{
           Actions.pop();
           return true;
-        }else{
-          if(new Date().getTime()-now < 2000){
-            BackHandler.exitApp();
-            return false;
-          }else{
-            ToastAndroid.show('确定退出吗？',10);
-            now = new Date().getTime();
-            return true;
-          }
         }
       }}
     >
